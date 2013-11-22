@@ -1,0 +1,23 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+    <browser:page
+        name="sharing"
+        for="*"
+        layer="collective.localrolesbygroups.interfaces.ILocalRolesByGroupsInstalled"
+        class=".sharing.SharingView"
+        permission="zope2.View"
+        />
+
+    <browser:page
+        name="updateSharingInfo"
+        for="*"
+        layer="collective.localrolesbygroups.interfaces.ILocalRolesByGroupsInstalled"
+        class=".sharing.SharingView"
+        attribute="updateSharingInfo"
+        permission="zope2.View"
+        />
+
+
+</configure>

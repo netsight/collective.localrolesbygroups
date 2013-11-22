@@ -1,0 +1,5 @@
+<layers>
+  <layer  name="collective.localrolesbygroups"
+          interface="collective.localrolesbygroups.interfaces.ILocalRolesByGroupsInstalled"
+          />
+</layers>

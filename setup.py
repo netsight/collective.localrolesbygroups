@@ -40,6 +40,7 @@ setup(name='collective.localrolesbygroups',
       zip_safe=False,
       install_requires=[
           'setuptools',
+          'plone.api',
           # -*- Extra requirements: -*-
       ],
       extras_require={'test': ['plone.app.testing']},
