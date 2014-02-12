@@ -1,32 +1,17 @@
-from itertools import chain
-
-from plone.memoize.instance import memoize, clearafter
-from zope.component import getUtilitiesFor, getMultiAdapter
-from zope.i18n import translate
-
-from Acquisition import aq_parent, aq_base
-from AccessControl import Unauthorized
-from zExceptions import Forbidden
-
 from Products.CMFCore.utils import getToolByName
-from Products.CMFCore import permissions
-from Products.CMFPlone.utils import normalizeString, safe_unicode
-from Products.Five.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.statusmessages.interfaces import IStatusMessage
 
+from plone.memoize.instance import memoize
+from plone.memoize import clearafter
+
+from plone.app.workflow.browser.sharing import SharingView as BaseView
 from plone.app.workflow import PloneMessageFactory as _
-from plone.app.workflow.interfaces import ISharingPageRole
-
-import json
 
 from plone.api.content import get_uuid
 from plone import api
 
-from plone.app.workflow.browser.sharing import SharingView as BaseView
-
 AUTH_GROUP = 'AuthenticatedUsers'
 STICKY = (AUTH_GROUP, )
+
 
 class SharingView(BaseView):
 
@@ -80,7 +65,7 @@ class SharingView(BaseView):
                     try:
                         groups_plugin.addGroup(group_id)
                     except KeyError:
-                        pass # group already exists
+                        pass  # group already exists
                     groups_plugin.manage_addPrincipalsToGroup(group_id, [user_id])
                     if role not in context.get_local_roles_for_userid(group_id):
                         context.manage_setLocalRoles(group_id, [role])
@@ -139,37 +124,39 @@ class SharingView(BaseView):
         acquired_roles = self._inherited_roles() + self._borg_localroles()
         available_roles = [r['id'] for r in self.roles()]
 
-
         # first process acquired roles
         items = {}
         for name, roles, rtype, rid in expand_roles(context, acquired_roles):
-            items[rid] = dict(id = rid,
-                              name = name,
-                              type = rtype,
-                              sitewide = [],
-                              acquired = roles,
-                              local = [], )
+            items[rid] = dict(id=rid,
+                              name=name,
+                              type=rtype,
+                              sitewide=[],
+                              acquired=roles,
+                              local=[],
+                              )
 
         # second process local roles
         for name, roles, rtype, rid in expand_roles(context, local_roles):
             if rid in items:
                 items[rid]['local'] += roles
             else:
-                items[rid] = dict(id = rid,
-                                  name = name,
-                                  type = rtype,
-                                  sitewide = [],
-                                  acquired = [],
-                                  local = roles, )
+                items[rid] = dict(id=rid,
+                                  name=name,
+                                  type=rtype,
+                                  sitewide=[],
+                                  acquired=[],
+                                  local=roles,
+                                  )
 
         # Make sure we always get the authenticated users virtual group
         if AUTH_GROUP not in items:
-            items[AUTH_GROUP] = dict(id = AUTH_GROUP,
-                                     name = _(u'Logged-in users'),
-                                     type = 'group',
-                                     sitewide = [],
-                                     acquired = [],
-                                     local = [], )
+            items[AUTH_GROUP] = dict(id=AUTH_GROUP,
+                                     name=_(u'Logged-in users'),
+                                     type='group',
+                                     sitewide=[],
+                                     acquired=[],
+                                     local=[],
+                                     )
 
         # If the current user has been given roles, remove them so that he
         # doesn't accidentally lock himself out.
@@ -210,11 +197,12 @@ class SharingView(BaseView):
                 if rid == AUTH_GROUP:
                     name = _(u'Logged-in users')
 
-            info_item = dict(id = item['id'],
-                             type = item['type'],
-                             title = name,
-                             disabled = item.get('disabled', False),
-                             roles = {})
+            info_item = dict(id=item['id'],
+                             type=item['type'],
+                             title=name,
+                             disabled=item.get('disabled', False),
+                             roles={}
+                             )
 
             # Record role settings
             have_roles = False
@@ -223,10 +211,10 @@ class SharingView(BaseView):
                     info_item['roles'][r] = 'global'
                 elif r in item['acquired']:
                     info_item['roles'][r] = 'acquired'
-                    have_roles = True # we want to show acquired roles
+                    have_roles = True  # we want to show acquired roles
                 elif r in item['local']:
                     info_item['roles'][r] = True
-                    have_roles = True # at least one role is set
+                    have_roles = True  # at least one role is set
                 else:
                     info_item['roles'][r] = False
 
@@ -235,17 +223,16 @@ class SharingView(BaseView):
 
         return info
 
+
 def expand_roles(context, userroles):
     # expand out the groups roles
     expanded_userroles = []
     acl_users = getToolByName(context, 'acl_users')
     for user, roles, role_type, name in userroles:
         if user.startswith('lrgroup-') and role_type == 'group':
-            for exp_userid,exp_username in acl_users.lr_groups.listAssignedPrincipals(user):
+            for exp_userid, exp_username in acl_users.lr_groups.listAssignedPrincipals(user):
                 expanded_userroles.append((exp_userid, roles, 'user', exp_username))
         else:
             expanded_userroles.append((user, roles, role_type, name))
 
     return expanded_userroles
-
-
