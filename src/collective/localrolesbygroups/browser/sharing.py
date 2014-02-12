@@ -10,6 +10,7 @@ from plone import api
 
 AUTH_GROUP = 'AuthenticatedUsers'
 STICKY = (AUTH_GROUP, )
+GROUP_KEY = 'lgroup'
 
 
 class SharingView(BaseView):
@@ -60,7 +61,7 @@ class SharingView(BaseView):
                 acl_users = getToolByName(context, 'acl_users')
                 groups_plugin = acl_users.lr_groups
                 for role in list(wanted_roles):
-                    group_id = "lrgroup-%s-%s" % (api.content.get_uuid(context), role)
+                    group_id = "%s-%s-%s" % (GROUP_KEY, api.content.get_uuid(context), role)
                     try:
                         groups_plugin.addGroup(group_id)
                     except KeyError:
@@ -78,7 +79,7 @@ class SharingView(BaseView):
                 for role in to_remove:
                     acl_users = getToolByName(context, 'acl_users')
                     groups_plugin = acl_users.lr_groups
-                    group_id = "lrgroup-%s-%s" % (api.content.get_uuid(context), role)
+                    group_id = "%s-%s-%s" % (GROUP_KEY, api.content.get_uuid(context), role)
                     groups_plugin.removePrincipalFromGroup(user_id, group_id)
 
         if member_ids_to_clear:
@@ -95,7 +96,7 @@ class SharingView(BaseView):
         user_roles = {}
         local_roles = self.context.get_local_roles()
         for group, roles in local_roles:
-            if group.startswith('lrgroup'):
+            if group.startswith(GROUP_KEY):
                 users = api.user.get_users(groupname=group)
                 for user in users:
                     # Each group only has 1 role
@@ -228,7 +229,7 @@ def expand_roles(context, userroles):
     expanded_userroles = []
     acl_users = getToolByName(context, 'acl_users')
     for user, roles, role_type, name in userroles:
-        if user.startswith('lrgroup-') and role_type == 'group':
+        if user.startswith(GROUP_KEY) and role_type == 'group':
             for exp_userid, exp_username in acl_users.lr_groups.listAssignedPrincipals(user):
                 expanded_userroles.append((exp_userid, roles, 'user', exp_username))
         else:
