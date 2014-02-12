@@ -153,7 +153,7 @@ class SharingView(BaseView):
         # second process local roles
         for name, roles, rtype, rid in expand_roles(context, local_roles):
             if rid in items:
-                items[rid]['local'] = roles
+                items[rid]['local'] += roles
             else:
                 items[rid] = dict(id = rid,
                                   name = name,
