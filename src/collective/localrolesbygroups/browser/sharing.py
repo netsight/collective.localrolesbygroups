@@ -21,6 +21,7 @@ from plone.app.workflow.interfaces import ISharingPageRole
 import json
 
 from plone.api.content import get_uuid
+from plone import api
 
 from plone.app.workflow.browser.sharing import SharingView as BaseView
 
@@ -40,7 +41,6 @@ class SharingView(BaseView):
         Returns True if changes were made, or False if the new settings
         are the same as the existing settings.
         """
-
         changed = False
         context = self.context
 
@@ -50,7 +50,7 @@ class SharingView(BaseView):
         for s in new_settings:
             user_id = s['id']
 
-            existing_roles = frozenset(context.get_local_roles_for_userid(userid=user_id))
+            existing_roles = frozenset(self.local_roles_by_user().get(user_id, []))
             selected_roles = frozenset(s['roles'])
 
             relevant_existing_roles = managed_roles & existing_roles
@@ -84,12 +84,18 @@ class SharingView(BaseView):
                     groups_plugin.manage_addPrincipalsToGroup(group_id, [user_id])
                     if role not in context.get_local_roles_for_userid(group_id):
                         context.manage_setLocalRoles(group_id, [role])
-                
 
 #                context.manage_setLocalRoles(user_id, list(wanted_roles))
                 changed = True
             elif existing_roles:
                 member_ids_to_clear.append(user_id)
+
+            if to_remove:
+                for role in to_remove:
+                    acl_users = getToolByName(context, 'acl_users')
+                    groups_plugin = acl_users.lr_groups
+                    group_id = "lrgroup-%s-%s" % (get_uuid(context), role)
+                    groups_plugin.removePrincipalFromGroup(user_id, group_id)
 
         if member_ids_to_clear:
             context.manage_delLocalRoles(userids=member_ids_to_clear)
@@ -99,6 +105,18 @@ class SharingView(BaseView):
             self.context.reindexObjectSecurity()
 
         return changed
+
+    @memoize
+    def local_roles_by_user(self):
+        user_roles = {}
+        local_roles = self.context.get_local_roles()
+        for group, roles in local_roles:
+            if group.startswith('lrgroup'):
+                users = api.user.get_users(groupname=group)
+                for user in users:
+                    # Each group only has 1 role
+                    user_roles.setdefault(user.getId(), []).append(roles[0])
+        return user_roles
 
     @memoize
     def existing_role_settings(self):
@@ -227,7 +245,7 @@ def expand_roles(context, userroles):
                 expanded_userroles.append((exp_userid, roles, 'user', exp_username))
         else:
             expanded_userroles.append((user, roles, role_type, name))
-                        
+
     return expanded_userroles
 
 
