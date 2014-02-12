@@ -18,5 +18,12 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
   <!-- -*- extra stuff goes here -*- -->
+  <genericsetup:importStep
+      name="collective.localrolesbygroups.setup"
+      title="Adds plugin to support storing local roles by groups"
+      description="Activates and configures collective.localrolesbygroups to do more efficient local roles handling on sites where local roles change often"
+      handler=".handlers.configureLocalRolesByGroups"
+      i18n:translate="title description"
+      /> 
 
 </configure>
