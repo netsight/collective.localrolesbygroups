@@ -6,7 +6,6 @@ from plone.memoize import clearafter
 from plone.app.workflow.browser.sharing import SharingView as BaseView
 from plone.app.workflow import PloneMessageFactory as _
 
-from plone.api.content import get_uuid
 from plone import api
 
 AUTH_GROUP = 'AuthenticatedUsers'
@@ -61,7 +60,7 @@ class SharingView(BaseView):
                 acl_users = getToolByName(context, 'acl_users')
                 groups_plugin = acl_users.lr_groups
                 for role in list(wanted_roles):
-                    group_id = "lrgroup-%s-%s" % (get_uuid(context), role)
+                    group_id = "lrgroup-%s-%s" % (api.content.get_uuid(context), role)
                     try:
                         groups_plugin.addGroup(group_id)
                     except KeyError:
@@ -79,7 +78,7 @@ class SharingView(BaseView):
                 for role in to_remove:
                     acl_users = getToolByName(context, 'acl_users')
                     groups_plugin = acl_users.lr_groups
-                    group_id = "lrgroup-%s-%s" % (get_uuid(context), role)
+                    group_id = "lrgroup-%s-%s" % (api.content.get_uuid(context), role)
                     groups_plugin.removePrincipalFromGroup(user_id, group_id)
 
         if member_ids_to_clear:
