@@ -74,7 +74,7 @@ class SharingView(BaseView):
             if wanted_roles:
                 # xxx maybe use groups tool?
                 acl_users = getToolByName(context, 'acl_users')
-                groups_plugin = acl_users.source_groups
+                groups_plugin = acl_users.lr_groups
                 for role in list(wanted_roles):
                     group_id = "lrgroup-%s-%s" % (get_uuid(context), role)
                     try:
@@ -223,7 +223,7 @@ def expand_roles(context, userroles):
     acl_users = getToolByName(context, 'acl_users')
     for user, roles, role_type, name in userroles:
         if user.startswith('lrgroup-') and role_type == 'group':
-            for exp_userid,exp_username in acl_users.source_groups.listAssignedPrincipals(user):
+            for exp_userid,exp_username in acl_users.lr_groups.listAssignedPrincipals(user):
                 expanded_userroles.append((exp_userid, roles, 'user', exp_username))
         else:
             expanded_userroles.append((user, roles, role_type, name))
