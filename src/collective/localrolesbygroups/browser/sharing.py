@@ -1,7 +1,7 @@
 from Products.CMFCore.utils import getToolByName
 
 from plone.memoize.instance import memoize
-from plone.memoize import clearafter
+from plone.memoize.instance import clearafter
 
 from plone.app.workflow.browser.sharing import SharingView as BaseView
 from plone.app.workflow import PloneMessageFactory as _
