@@ -1,0 +1,73 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:monkey="http://namespaces.plone.org/monkey"
+    i18n_domain="collective.monkeypatcher">
+
+    <include package="collective.monkeypatcher" />
+
+    <monkey:patch
+        description="Patched to implement local roles by groups"
+        class="AccessControl.rolemanager.RoleManager"
+        original="has_local_roles"
+        replacement=".patches.has_local_roles"
+        preserveOriginal="true"
+        />
+
+    <monkey:patch
+        description="Patched to implement local roles by groups"
+        class="AccessControl.rolemanager.RoleManager"
+        original="get_local_roles"
+        replacement=".patches.get_local_roles"
+        preserveOriginal="true"
+        />
+
+    <monkey:patch
+        description="Patched to implement local roles by groups"
+        class="AccessControl.rolemanager.RoleManager"
+        original="users_with_local_role"
+        replacement=".patches.users_with_local_role"
+        preserveOriginal="true"
+        />
+
+    <monkey:patch
+        description="Patched to implement local roles by groups"
+        class="AccessControl.rolemanager.RoleManager"
+        original="get_local_roles_for_userid"
+        replacement=".patches.get_local_roles_for_userid"
+        preserveOriginal="true"
+        />
+
+    <monkey:patch
+        description="Patched to implement local roles by groups"
+        class="AccessControl.rolemanager.RoleManager"
+        original="manage_addLocalRoles"
+        replacement=".patches.manage_addLocalRoles"
+        preserveOriginal="true"
+        />
+
+    <monkey:patch
+        description="Patched to implement local roles by groups"
+        class="AccessControl.rolemanager.RoleManager"
+        original="manage_setLocalRoles"
+        replacement=".patches.manage_setLocalRoles"
+        preserveOriginal="true"
+        />
+
+    <monkey:patch
+        description="Patched to implement local roles by groups"
+        class="AccessControl.rolemanager.RoleManager"
+        original="manage_delLocalRoles"
+        replacement=".patches.manage_delLocalRoles"
+        preserveOriginal="true"
+        />
+
+    <monkey:patch
+        description="Patched to implement local roles by groups"
+        class="AccessControl.rolemanager.RoleManager"
+        original="manage_delLocalRoles"
+        replacement=".patches.manage_delLocalRoles"
+        preserveOriginal="true"
+        />
+
+
+</configure>
