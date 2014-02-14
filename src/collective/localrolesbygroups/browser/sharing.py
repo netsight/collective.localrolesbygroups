@@ -8,9 +8,10 @@ from plone.app.workflow import PloneMessageFactory as _
 
 from plone import api
 
+from collective.localrolesbygroups.utils import GROUP_KEY
+
 AUTH_GROUP = 'AuthenticatedUsers'
 STICKY = (AUTH_GROUP, )
-GROUP_KEY = 'lgroup'
 
 
 class SharingView(BaseView):
