@@ -10,6 +10,7 @@
         permission="zope2.View"
         />
 
+    
     <browser:page
         name="updateSharingInfo"
         for="*"
@@ -18,6 +19,6 @@
         attribute="updateSharingInfo"
         permission="zope2.View"
         />
-
+     
 
 </configure>

@@ -9,6 +9,7 @@
 
   <includeDependencies package="." />
   <include package=".browser" />
+  <include file="patches.zcml" />
 
   <genericsetup:registerProfile
       name="default"
