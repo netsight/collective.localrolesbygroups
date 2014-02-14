@@ -6,9 +6,12 @@ from utils import GROUP_KEY
 def has_local_roles(self):
     return self._old_has_local_roles()
 
-def get_local_roles(self):
+def get_local_roles(self, raw=False):
     items = self._old_get_local_roles()
-    return expand_roles(self,items)
+    if raw:
+        return items
+    else:
+        return expand_roles(self,items)
 
 def users_with_local_role(self, role):
     return self._old_users_with_local_role(role)
