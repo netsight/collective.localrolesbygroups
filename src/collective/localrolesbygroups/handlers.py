@@ -20,3 +20,7 @@ def configureLocalRolesByGroups(context):
     # Activate all but Enumeration, as we don't want to show these groups in UI:
     activatePluginInterfaces(site, "lr_groups",
                              disable=['IGroupEnumerationPlugin'])
+
+    # Disable borg localroles, as we are not compatible with it.
+    activatePluginInterfaces(site, "borg_localroles",
+                             disable=['ILocalRolesPlugin'])
